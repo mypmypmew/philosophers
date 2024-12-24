@@ -1,8 +1,5 @@
-#include <pthread.h>
-#include <stdio.h>
-#include <sys/time.h> // time
-#include <stdint.h> // uint64_t
-#include <unistd.h>  //usleep
+
+#include "philo.h"
 
 // struct timeval {
 //     time_t      tv_sec;     // seconds
