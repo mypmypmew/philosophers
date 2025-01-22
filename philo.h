@@ -37,4 +37,8 @@ typedef struct	s_info
 	int		finished;
 	t_fork	*forks;
 	t_philosophers	*philosophers;
+
+	pthread_mutex_t print_mutex;
 } t_info;
+
+int init_philosophers(t_info *rules);

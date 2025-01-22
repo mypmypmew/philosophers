@@ -130,6 +130,8 @@ int main(int argc, char **argv)
 		printf("init_rules failed\n");
 		return (1);
 	}
+
+
 	// 1 - check and read data
 
 	// 2 - create in a loop pthread_create for each philo
