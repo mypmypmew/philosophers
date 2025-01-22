@@ -85,8 +85,25 @@ static int check_args(char **args, int count)
 	return (1);
 }
 
-t_info *init_rules(t_info *rules, char **args, int argc)
+t_info *init_rules(t_info *rules, char **args, int arg_count)
 {
+	rules = (t_info *)malloc(sizeof(t_info));
+	if(!rules)
+		return (NULL);
+
+	rules->philosophers_number = (int)ft_atol(args[0]);
+	rules->time_to_die = (int)ft_atol(args[1]);
+	rules->time_to_eat = (int)ft_atol(args[2]);
+	rules->time_to_sleep = (int)ft_atol(args[3]);
+
+	if(arg_count == 5)
+		rules->meals_amount = (int)ft_atol(args[4]);
+	else
+		rules->meals_amount = -1;
+
+	rules->finished = 0;
+	rules->forks = NULL;
+	rules->philosophers = NULL;
 	return rules;
 }
 
@@ -186,10 +203,6 @@ int main(int argc, char **argv)
 
 
 	*/
-
-
-
-
 
 	return (0);
 }
