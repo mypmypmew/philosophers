@@ -28,19 +28,91 @@ void    example_1()
 	printf("\n%ld years passed since 1970\n", time.tv_sec / 60 / 60 / 24 / 365);
 }
 
-void    example_2()
+int	ft_isdigit(int c)
 {
-	uint64_t    start_time;
-	uint64_t    now;
-
-	start_time = get_time();
-	usleep(200000); // accepts in microseconds
-	now = get_time();
-	printf("%llu milliseconds passed since the start\n", now - start_time);
+	return ((c >= '0' && c <= '9'));
 }
+
+static long ft_atol(const char *str)
+{
+	long result;
+	int  i;
+
+	i = 0;
+	result = 0;
+
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == ' ')
+		i++;
+	while (str[i] && ft_isdigit((unsigned char)str[i]))
+	{
+		long prev = result;
+		result = result * 10 + (str[i] - '0');
+		if (result < prev || result > 2147483647)
+			return (-1);
+		i++;
+	}
+	return (result);
+}
+
+static int is_digit_str(const char *str)
+{
+	int i = 0;
+
+	if (!str || !*str)
+		return (0);
+	while (str[i])
+	{
+		if (!ft_isdigit((unsigned char)str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int check_args(char **args, int count)
+{
+	int i = 0;
+
+	while (i < count)
+	{
+		if (!is_digit_str(args[i]))
+			return (0);
+		long val = ft_atol(args[i]);
+		if (val <= 0)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+t_info *init_rules(t_info *rules, char **args, int argc)
+{
+	return rules;
+}
+
 
 int main(int argc, char **argv)
 {
+	t_info  *rules;
+
+	if (argc != 5 && argc != 6)
+	{
+		printf("wrong arguments\n");
+		return (1);
+	}
+
+	if (!check_args(argv + 1, argc - 1))
+	{
+		printf("wrong arguments\n");
+		return (1);
+	}
+
+	rules = init_rules(NULL, argv + 1, argc - 1);
+	if (!rules)
+	{
+		printf("init_rules failed\n");
+		return (1);
+	}
 	// 1 - check and read data
 
 	// 2 - create in a loop pthread_create for each philo
@@ -113,20 +185,6 @@ int main(int argc, char **argv)
 	}
 
 
-	void ft_usleep(int ms)
-	{
-		struct timeval start;
-		struct timeval curr_time;
-
-		gettimeofday(&start, 0);
-		gettimeofday(&curr_time, 0);
-		while( (now.tv_sec - start.tv_sec) * 1000 + (now.tvusec - start.tv_usec)/1000) < ms)
-		{
-			usleep(10);
-			gettimeofday(&curr_time);
-		}
-
-	}
 	*/
 
 

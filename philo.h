@@ -6,6 +6,8 @@
 #include <stdint.h> // uint64_t
 #include <unistd.h>  //usleep
 
+typedef struct s_info t_info;
+
 typedef struct s_fork {
 	pthread_mutex_t	fork;
 	int				id;
