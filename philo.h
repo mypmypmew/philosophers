@@ -36,11 +36,16 @@ typedef struct	s_info
 	int		time_to_sleep;
 	int		meals_amount;
 	int		finished;
+	long	start_time;
 	t_fork	*forks;
 	t_philosophers	*philosophers;
 
 	pthread_mutex_t print_mutex;
+	pthread_mutex_t meal_check;
 } t_info;
 
 int init_philosophers(t_info *rules);
 int start_simulation_debug(t_info *rules);
+void *philo_routine(void *arg);
+int launcher(t_info *rules);
+long get_current_time_ms(void);

@@ -51,5 +51,10 @@ int init_philosophers(t_info *rules)
 		printf("Error: could not init print_mutex.\n");
 		return (0);
 	}
+	if (pthread_mutex_init(&rules->meal_check, NULL) != 0)
+{
+    printf("Error: could not init meal_check.\n");
+    return (0);
+}
 	return (1);
 }
