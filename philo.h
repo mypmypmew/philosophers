@@ -43,3 +43,4 @@ typedef struct	s_info
 } t_info;
 
 int init_philosophers(t_info *rules);
+int start_simulation_debug(t_info *rules);

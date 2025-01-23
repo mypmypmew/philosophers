@@ -162,9 +162,14 @@ int main(int argc, char **argv)
 		printf("\n");
 	}
 
+	if (!start_simulation_debug(rules))
+	{
+		printf("start_simulation_debug() failed\n");
+		return (1);
+	}
+
 	if (rules->forks)
 	{
-		// Destroy each fork's mutex
 		for (int i = 0; i < rules->philosophers_number; i++)
 			pthread_mutex_destroy(&rules->forks[i].fork);
 		free(rules->forks);
