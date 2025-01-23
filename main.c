@@ -131,13 +131,13 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
-	printf("=== Debug: Values from init_rules ===\n");
-	printf("Philosophers number: %d\n", rules->philosophers_number);
-	printf("time_to_die:         %d\n", rules->time_to_die);
-	printf("time_to_eat:         %d\n", rules->time_to_eat);
-	printf("time_to_sleep:       %d\n", rules->time_to_sleep);
-	printf("meals_amount (5th):  %d\n", rules->meals_amount);
-	printf("-------------------------------------\n\n");
+	// printf("=== Debug: Values from init_rules ===\n");
+	// printf("Philosophers number: %d\n", rules->philosophers_number);
+	// printf("time_to_die:         %d\n", rules->time_to_die);
+	// printf("time_to_eat:         %d\n", rules->time_to_eat);
+	// printf("time_to_sleep:       %d\n", rules->time_to_sleep);
+	// printf("meals_amount (5th):  %d\n", rules->meals_amount);
+	// printf("-------------------------------------\n\n");
 
 	if (!init_philosophers(rules))
 	{
@@ -146,23 +146,29 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
-	printf("=== Debug: After init_philosophers ===\n");
-	printf("Fork array address: %p\n", (void *)rules->forks);
-	printf("Philosopher array address: %p\n\n", (void *)rules->philosophers);
+	// printf("=== Debug: After init_philosophers ===\n");
+	// printf("Fork array address: %p\n", (void *)rules->forks);
+	// printf("Philosopher array address: %p\n\n", (void *)rules->philosophers);
 
-	for (int i = 0; i < rules->philosophers_number; i++)
-	{
-		t_philosophers *p = &rules->philosophers[i];
-		printf("Philo #%d\n", p->philosophers_id);
-		printf("  left_fork -> id:  %d\n", p->left_fork->id);
-		printf("  right_fork -> id: %d\n", p->right_fork->id);
-		printf("  last_meal:        %ld\n", p->last_meal);
-		printf("  meals_amount:      %d\n", p->meals_amount);
-		printf("  full:             %d\n", p->full);
-		printf("\n");
-	}
+	// for (int i = 0; i < rules->philosophers_number; i++)
+	// {
+	// 	t_philosophers *p = &rules->philosophers[i];
+	// 	printf("Philo #%d\n", p->philosophers_id);
+	// 	printf("  left_fork -> id:  %d\n", p->left_fork->id);
+	// 	printf("  right_fork -> id: %d\n", p->right_fork->id);
+	// 	printf("  last_meal:        %ld\n", p->last_meal);
+	// 	printf("  meals_amount:      %d\n", p->meals_amount);
+	// 	printf("  full:             %d\n", p->full);
+	// 	printf("\n");
+	// }
 
-	if (!start_simulation_debug(rules))
+	// if (!start_simulation_debug(rules))
+	// {
+	// 	printf("start_simulation_debug() failed\n");
+	// 	return (1);
+	// }
+
+	if (!launcher(rules))
 	{
 		printf("start_simulation_debug() failed\n");
 		return (1);
