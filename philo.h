@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h> // time
 #include <stdint.h> // uint64_t
 #include <unistd.h>  //usleep

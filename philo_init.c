@@ -17,7 +17,7 @@ int init_philosophers(t_info *rules)
 
 	rules->forks = (t_fork *)malloc(sizeof(t_fork) * rules->philosophers_number);
 	if (!rules->forks)
-		return (NULL);
+		return (-1);
 	i = 0;
 	while(i < rules->philosophers_number)
 	{
