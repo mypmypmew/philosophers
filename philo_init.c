@@ -4,7 +4,7 @@ int init_philosophers(t_info *rules)
 {
 	int	i;
 
-	if (rules->philosophers_number < 2 || rules->philosophers_number > 250)
+	if (rules->philosophers_number < 1 || rules->philosophers_number > 250)
 	{
 		printf("Error: invalid number of philosophers (must be >=2 and <=250)\n");
 		return (0);

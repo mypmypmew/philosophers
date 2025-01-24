@@ -16,11 +16,24 @@ void action_print(t_info *rules, int philo_id, const char *msg)
 	pthread_mutex_unlock(&rules->print_mutex);
 }
 
+
+
+long long get_current_time__ms(void)
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
 void smart_sleep(int duration_ms, t_info *rules)
 {
-	long start = get_current_time_ms();
-	while (!rules->finished && (get_current_time_ms() - start < duration_ms))
-		usleep(100);  // Sleep 100 microseconds at a time
+	long long start = get_current_time__ms();
+	while (!rules->finished)
+	{
+		if (get_current_time__ms() - start >= duration_ms)
+			break;
+		usleep(100);
+	}
 }
 
 void philo_eats(t_philosophers *philo)
@@ -51,6 +64,22 @@ void *philo_routine(void *arg)
 {
 	t_philosophers *philo = (t_philosophers *)arg;
 	t_info         *rules = philo->info;
+
+		if (rules->philosophers_number == 1)
+	{
+		pthread_mutex_lock(&philo->left_fork->fork);
+		action_print(rules, philo->philosophers_id, "has taken a fork");
+
+		long long start = get_current_time_ms();
+		while (!rules->finished &&
+			   get_current_time_ms() - start < rules->time_to_die)
+		{
+			usleep(100);
+		}
+
+		pthread_mutex_unlock(&philo->left_fork->fork);
+		return NULL;
+	}
 
 	if (philo->philosophers_id % 2 == 0)
 		usleep(15000);
