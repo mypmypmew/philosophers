@@ -80,21 +80,11 @@ t_info *init_rules(t_info *rules, char **args, int arg_count)
 	return rules;
 }
 
-
-
-
 static void print_usage(void)
 {
 	printf("Usage: ./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [meals_amount]\n");
 }
 
-/**
- * parse_args:
- * 1) Check argument count
- * 2) Check argument validity (via check_args)
- * 3) Allocate and initialize t_info (via init_rules)
- * On failure, print message and return 0. On success, return 1.
- */
 static int parse_args(int argc, char **argv, t_info **rules)
 {
 	if (argc != 5 && argc != 6)
@@ -108,7 +98,6 @@ static int parse_args(int argc, char **argv, t_info **rules)
 		return 0;
 	}
 
-	// init_rules allocates and returns a t_info*
 	*rules = init_rules(NULL, argv + 1, argc - 1);
 	if (!*rules)
 	{
@@ -118,12 +107,6 @@ static int parse_args(int argc, char **argv, t_info **rules)
 	return 1;
 }
 
-/**
- * init_all:
- * Calls your existing init_philosophers(rules).
- * If it fails, prints error and returns 0.
- * Otherwise returns 1.
- */
 static int init_all(t_info *rules)
 {
 	if (!init_philosophers(rules))
@@ -134,11 +117,6 @@ static int init_all(t_info *rules)
 	return 1;
 }
 
-/**
- * run_simulation:
- * Just wraps the call to launcher(rules).
- * launcher() returns 0 on success, 1 on failure.
- */
 static int run_simulation(t_info *rules)
 {
 	if (launcher(rules) != 0)
@@ -150,14 +128,6 @@ static int run_simulation(t_info *rules)
 	return 1;
 }
 
-/**
- * cleanup:
- *  - Destroy all mutexes
- *  - Free forks
- *  - Free philosophers array
- *  - Destroy print_mutex
- *  - Free the t_info struct itself
- */
 static void cleanup(t_info *rules)
 {
 	if (rules->forks)
@@ -175,14 +145,6 @@ static void cleanup(t_info *rules)
 	free(rules);
 }
 
-/**
- * main:
- * High-level "driver":
- *  - parse_args
- *  - init_all
- *  - run_simulation
- *  - cleanup
- */
 int main(int argc, char **argv)
 {
 	t_info *rules = NULL;
@@ -195,13 +157,11 @@ int main(int argc, char **argv)
 		free(rules);
 		return 1;
 	}
-
 	if (!run_simulation(rules))
 	{
 		cleanup(rules);
 		return 1;
 	}
-
 	cleanup(rules);
 	return 0;
 }
