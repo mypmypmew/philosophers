@@ -1,33 +1,6 @@
 
 #include "philo.h"
 
-// struct timeval {
-//     time_t      tv_sec;     // seconds
-//     suseconds_t tv_usec;    // microseconds
-// };
-
-uint64_t	get_time(void) // returns time in milliseconds
-{
-	struct timeval	tv;
-
-	if (gettimeofday(&tv, NULL))
-		return (0);
-	return ((tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / 1000));
-}
-
-void    example_1()
-{
-	struct timeval time;
-
-	gettimeofday(&time, NULL);
-	printf("%ld seconds\n", time.tv_sec);
-	sleep(5);
-	gettimeofday(&time, NULL);
-	printf("%ld seconds\n", time.tv_sec);
-
-	printf("\n%ld years passed since 1970\n", time.tv_sec / 60 / 60 / 24 / 365);
-}
-
 int	ft_isdigit(int c)
 {
 	return ((c >= '0' && c <= '9'));
@@ -108,159 +81,127 @@ t_info *init_rules(t_info *rules, char **args, int arg_count)
 }
 
 
-int main(int argc, char **argv)
-{
-	t_info  *rules;
 
+
+static void print_usage(void)
+{
+	printf("Usage: ./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [meals_amount]\n");
+}
+
+/**
+ * parse_args:
+ * 1) Check argument count
+ * 2) Check argument validity (via check_args)
+ * 3) Allocate and initialize t_info (via init_rules)
+ * On failure, print message and return 0. On success, return 1.
+ */
+static int parse_args(int argc, char **argv, t_info **rules)
+{
 	if (argc != 5 && argc != 6)
 	{
-		printf("wrong arguments\n");
-		return (1);
+		print_usage();
+		return 0;
 	}
-
 	if (!check_args(argv + 1, argc - 1))
 	{
 		printf("wrong arguments\n");
-		return (1);
+		return 0;
 	}
 
-	rules = init_rules(NULL, argv + 1, argc - 1);
-	if (!rules)
+	// init_rules allocates and returns a t_info*
+	*rules = init_rules(NULL, argv + 1, argc - 1);
+	if (!*rules)
 	{
 		printf("init_rules failed\n");
-		return (1);
+		return 0;
 	}
+	return 1;
+}
 
-	// printf("=== Debug: Values from init_rules ===\n");
-	// printf("Philosophers number: %d\n", rules->philosophers_number);
-	// printf("time_to_die:         %d\n", rules->time_to_die);
-	// printf("time_to_eat:         %d\n", rules->time_to_eat);
-	// printf("time_to_sleep:       %d\n", rules->time_to_sleep);
-	// printf("meals_amount (5th):  %d\n", rules->meals_amount);
-	// printf("-------------------------------------\n\n");
-
+/**
+ * init_all:
+ * Calls your existing init_philosophers(rules).
+ * If it fails, prints error and returns 0.
+ * Otherwise returns 1.
+ */
+static int init_all(t_info *rules)
+{
 	if (!init_philosophers(rules))
 	{
 		printf("init_philosophers failed\n");
-		free(rules);
-		return (1);
+		return 0;
 	}
+	return 1;
+}
 
-	// printf("=== Debug: After init_philosophers ===\n");
-	// printf("Fork array address: %p\n", (void *)rules->forks);
-	// printf("Philosopher array address: %p\n\n", (void *)rules->philosophers);
-
-	// for (int i = 0; i < rules->philosophers_number; i++)
-	// {
-	// 	t_philosophers *p = &rules->philosophers[i];
-	// 	printf("Philo #%d\n", p->philosophers_id);
-	// 	printf("  left_fork -> id:  %d\n", p->left_fork->id);
-	// 	printf("  right_fork -> id: %d\n", p->right_fork->id);
-	// 	printf("  last_meal:        %ld\n", p->last_meal);
-	// 	printf("  meals_amount:      %d\n", p->meals_amount);
-	// 	printf("  full:             %d\n", p->full);
-	// 	printf("\n");
-	// }
-
-	// if (!start_simulation_debug(rules))
-	// {
-	// 	printf("start_simulation_debug() failed\n");
-	// 	return (1);
-	// }
-
-	if (!launcher(rules))
+/**
+ * run_simulation:
+ * Just wraps the call to launcher(rules).
+ * launcher() returns 0 on success, 1 on failure.
+ */
+static int run_simulation(t_info *rules)
+{
+	if (launcher(rules) != 0)
 	{
-		printf("start_simulation_debug() failed\n");
-		return (1);
+		// Adjust message if needed
+		printf("launcher failed\n");
+		return 0;
 	}
+	return 1;
+}
 
+/**
+ * cleanup:
+ *  - Destroy all mutexes
+ *  - Free forks
+ *  - Free philosophers array
+ *  - Destroy print_mutex
+ *  - Free the t_info struct itself
+ */
+static void cleanup(t_info *rules)
+{
 	if (rules->forks)
 	{
 		for (int i = 0; i < rules->philosophers_number; i++)
 			pthread_mutex_destroy(&rules->forks[i].fork);
 		free(rules->forks);
 	}
+
 	if (rules->philosophers)
 		free(rules->philosophers);
 
-	// If you initialized a print_mutex, destroy it:
 	pthread_mutex_destroy(&rules->print_mutex);
 
 	free(rules);
+}
 
-	// 1 - check and read data
+/**
+ * main:
+ * High-level "driver":
+ *  - parse_args
+ *  - init_all
+ *  - run_simulation
+ *  - cleanup
+ */
+int main(int argc, char **argv)
+{
+	t_info *rules = NULL;
 
-	// 2 - create in a loop pthread_create for each philo
-	//and pass routine function to every philosopher and pass data
+	if (!parse_args(argc, argv, &rules))
+		return 1;
 
-	// 3 - main thread check that every philo is alive
-
-	// 4 - if somebody died -> join all threads, then destroy mutexes
-
-	/*
-
-	void *philo(void *data)
+	if (!init_all(rules))
 	{
-		if(data->id % 2 == 0)
-		{
-			usleep(2500);
-		}
-		need a global mutex for printf;
-
-		while (1)
-		{
-			need to protect printf with mutex;
-
-			printf("thinking");
-			lock(left);
-			printf("took left fork");
-			lock(right);
-			printf("took right fork");
-			print(philo eating);
-			last_eating_time = gettimeofday();
-			usleep(time to eat * 1000);
-			unlock
-			unlock
-			printf("sleeping");
-			usleep(time to sleep * 1000);
-		}
+		free(rules);
+		return 1;
 	}
 
-
-	function is_dead(t_philos *philos)
+	if (!run_simulation(rules))
 	{
-		struct philo
-		{
-			time_to_die
-			time_to_sleep
-			time_to_eat
-		mutex	*left fork
-		mutex	*right fork;
-		struct timeval {
-			long	last_meal_time
-		}
-		must_die; ?
-		}
-
-
-		gettimeoftade - last_meal_
+		cleanup(rules);
+		return 1;
 	}
 
-
-	allowed function
-
-	gettimeofday(struct *timeval, 0)
-	{
-
-	}
-
-	stuct timeval {
-		long tv_sec; - tv_sec * 1000 + tv_usec/1000
-		long tv_usec;
-	}
-
-
-	*/
-
-	return (0);
+	cleanup(rules);
+	return 0;
 }
