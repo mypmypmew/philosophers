@@ -42,6 +42,7 @@ typedef struct	s_info
 
 	pthread_mutex_t print_mutex;
 	pthread_mutex_t meal_check;
+	pthread_mutex_t dead_lock;
 } t_info;
 
 int init_philosophers(t_info *rules);
