@@ -20,3 +20,10 @@ void action_print(t_info *rules, int philo_id, const char *msg)
 		pthread_mutex_unlock(&rules->dead_lock);
 	}
 }
+
+void check_finished(t_philosophers *philo, int *local_finished)
+{
+	pthread_mutex_lock(&philo->info->dead_lock);
+	*local_finished = philo->info->finished;
+	pthread_mutex_unlock(&philo->info->dead_lock);
+}

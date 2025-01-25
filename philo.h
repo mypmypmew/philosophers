@@ -54,3 +54,13 @@ long get_current_time_ms(void);
 void		action_print(t_info *rules, int philo_id, const char *msg);
 long long	calculate_remaining_time(long long start, long long target_us);
 long long	current_time_microseconds(void);
+void		philo_usleep(long long target_us, t_philosophers *philo);
+void		check_finished(t_philosophers *philo, int *local_finished);
+void		philo_usleep(long long target_us, t_philosophers *philo);
+
+void		lock_forks(t_philosophers *philo);
+void		unlock_forks(t_philosophers *philo);
+void		update_last_meal(t_philosophers *philo);
+void		update_last_meal(t_philosophers *philo);
+void		increment_meals(t_philosophers *philo);
+void		philo_eats(t_philosophers *philo);

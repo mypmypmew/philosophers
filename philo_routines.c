@@ -1,131 +1,21 @@
 #include "philo.h"
 
-void check_finished(t_philosophers *philo, int *local_finished)
+void	handle_single_philosopher(t_philosophers *philo)
 {
-	pthread_mutex_lock(&philo->info->dead_lock);
-	*local_finished = philo->info->finished;
-	pthread_mutex_unlock(&philo->info->dead_lock);
-}
+	t_info	*rules;
+	int		local_finished;
 
-
-void	short_sleep_loop(long long start, long long target_us, t_philosophers *philo)
-{
-	int local_finished;
-
-	while (1)
-	{
-		check_finished(philo, &local_finished);
-		if (local_finished)
-			break;
-		if (current_time_microseconds() - start >= target_us)
-			break;
-	}
-}
-
-void philo_usleep(long long target_us, t_philosophers *philo)
-{
-	long long start;
-	int local_finished;
-	long long remaining;
-
-	start = current_time_microseconds();
-	while (1)
-	{
-		check_finished(philo, &local_finished);
-		if (local_finished)
-			break;
-		remaining = calculate_remaining_time(start, target_us);
-		if (remaining <= 0)
-			break;
-		if (remaining > 1000)
-			usleep(remaining / 2);
-		else
-		{
-			short_sleep_loop(start, target_us, philo);
-			break;
-		}
-	}
-}
-
-void lock_forks(t_philosophers *philo)
-{
-	if (philo->left_fork->id < philo->right_fork->id)
-	{
-		pthread_mutex_lock(&philo->left_fork->fork);
-		action_print(philo->info, philo->philosophers_id, "has taken a fork");
-
-		pthread_mutex_lock(&philo->right_fork->fork);
-		action_print(philo->info, philo->philosophers_id, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(&philo->right_fork->fork);
-		action_print(philo->info, philo->philosophers_id, "has taken a fork");
-
-		pthread_mutex_lock(&philo->left_fork->fork);
-		action_print(philo->info, philo->philosophers_id, "has taken a fork");
-	}
-}
-
-void unlock_forks(t_philosophers *philo)
-{
-	if (philo->left_fork->id < philo->right_fork->id)
-	{
-		pthread_mutex_unlock(&philo->right_fork->fork);
-		pthread_mutex_unlock(&philo->left_fork->fork);
-	}
-	else
-	{
-		pthread_mutex_unlock(&philo->left_fork->fork);
-		pthread_mutex_unlock(&philo->right_fork->fork);
-	}
-}
-
-void update_last_meal(t_philosophers *philo)
-{
-	pthread_mutex_lock(&philo->info->meal_check);
-	philo->last_meal = get_current_time_ms();
-	pthread_mutex_unlock(&philo->info->meal_check);
-}
-
-void increment_meals(t_philosophers *philo)
-{
-	pthread_mutex_lock(&philo->info->meal_check);
-	philo->meals_amount++;
-	pthread_mutex_unlock(&philo->info->meal_check);
-}
-
-void philo_eats(t_philosophers *philo)
-{
-	lock_forks(philo);
-
-	update_last_meal(philo);
-
-	action_print(philo->info, philo->philosophers_id, "is eating");
-	philo_usleep((long long)philo->info->time_to_eat * 1000, philo);
-
-	increment_meals(philo);
-
-	unlock_forks(philo);
-}
-
-void handle_single_philosopher(t_philosophers *philo)
-{
-	t_info *rules = philo->info;
-
+	rules = philo->info;
 	pthread_mutex_lock(&philo->left_fork->fork);
 	action_print(rules, philo->philosophers_id, "has taken a fork");
-
 	long long start = get_current_time_ms();
 	while (1)
 	{
 		pthread_mutex_lock(&rules->dead_lock);
-		int local_finished = rules->finished;
+		local_finished = rules->finished;
 		pthread_mutex_unlock(&rules->dead_lock);
-
 		if (local_finished || (get_current_time_ms() - start) >= rules->time_to_die)
 			break;
-
 		usleep(50);
 	}
 	pthread_mutex_unlock(&philo->left_fork->fork);
