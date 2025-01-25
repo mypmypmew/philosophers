@@ -4,9 +4,9 @@
 
 static int validate_input(t_info *rules)
 {
-	if (rules->philosophers_number < 1 || rules->philosophers_number > 250)
+	if (rules->philosophers_number < 1)
 	{
-		printf("Error: invalid number of philosophers (must be >=2 and <=250)\n");
+		printf("Error: invalid number of philosophers (must be >=1)\n");
 		return (0);
 	}
 	if (rules->time_to_die < 0 || rules->time_to_eat < 0 || rules->time_to_sleep < 0)
@@ -79,6 +79,13 @@ static int init_mutexes(t_info *rules)
 		pthread_mutex_destroy(&rules->print_mutex);
 		return (0);
 	}
+	if (pthread_mutex_init(&rules->dead_lock, NULL) != 0)
+	{
+		printf("Error: could not init dead_lock.\n");
+		pthread_mutex_destroy(&rules->dead_lock);
+		return (0);
+	}
+
 	return (1);
 }
 
