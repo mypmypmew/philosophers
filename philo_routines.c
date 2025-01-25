@@ -74,44 +74,6 @@ void philo_usleep(long long target_us, t_philosophers *philo)
 	}
 }
 
-// static int check_time(t_philosophers *philo, struct timeval *time,
-// 					  long long start, long long usecs)
-// {
-// 	gettimeofday(time, NULL);
-// 	if ((((time->tv_sec * 1000000) + time->tv_usec) - start) > usecs
-// 		|| philo->info->finished)
-// 		return (1);
-// 	return (0);
-// }
-
-// void ft_usleep(long long usecs, t_philosophers *philo)
-// {
-// 	struct timeval  time;
-// 	long long       start;
-// 	long long       rem;
-
-// 	gettimeofday(&time, NULL);
-// 	start = ((time.tv_sec * 1000000) + time.tv_usec);
-
-// 	while (1)
-// 	{
-// 		if (check_time(philo, &time, start, usecs) == 1)
-// 			break;
-// 		rem = usecs - (((time.tv_sec * 1000000) + time.tv_usec) - start);
-
-// 		if (rem > 1000)
-// 			usleep(rem / 2);
-// 		else
-// 		{
-// 			while (1)
-// 			{
-// 				gettimeofday(&time, NULL);
-// 				if ((((time.tv_sec * 1000000) + time.tv_usec) - start) > usecs)
-// 					break;
-// 			}
-// 		}
-// 	}
-// }
 
 void philo_eats(t_philosophers *philo)
 {
@@ -119,23 +81,18 @@ void philo_eats(t_philosophers *philo)
 
 	pthread_mutex_lock(&philo->left_fork->fork);
 	action_print(rules, philo->philosophers_id, "has taken a fork");
-
 	pthread_mutex_lock(&philo->right_fork->fork);
 	action_print(rules, philo->philosophers_id, "has taken a fork");
-
 	pthread_mutex_lock(&rules->meal_check);
 	philo->last_meal = get_current_time_ms();
 	pthread_mutex_unlock(&rules->meal_check);
-
 	action_print(rules, philo->philosophers_id, "is eating");
-
 	philo_usleep((long long)rules->time_to_eat * 1000, philo);
-
 	philo->meals_amount++;
-
 	pthread_mutex_unlock(&philo->right_fork->fork);
 	pthread_mutex_unlock(&philo->left_fork->fork);
 }
+
 
 void *philo_routine(void *arg)
 {
@@ -152,7 +109,7 @@ void *philo_routine(void *arg)
 			while (!rules->finished &&
 				   (get_current_time_ms() - start) < rules->time_to_die)
 			{
-				usleep(100);
+				usleep(50);
 			}
 		}
 		pthread_mutex_unlock(&philo->left_fork->fork);
