@@ -50,3 +50,7 @@ int start_simulation_debug(t_info *rules);
 void *philo_routine(void *arg);
 int launcher(t_info *rules);
 long get_current_time_ms(void);
+
+void		action_print(t_info *rules, int philo_id, const char *msg);
+long long	calculate_remaining_time(long long start, long long target_us);
+long long	current_time_microseconds(void);

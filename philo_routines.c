@@ -1,34 +1,4 @@
 #include "philo.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/time.h>
-
-void action_print(t_info *rules, int philo_id, const char *msg)
-{
-	long now;
-
-	pthread_mutex_lock(&rules->dead_lock);
-	if (!rules->finished)
-	{
-		pthread_mutex_unlock(&rules->dead_lock);
-		pthread_mutex_lock(&rules->print_mutex);
-
-		now = get_current_time_ms() - rules->start_time;
-		printf("%ld %d %s\n", now, philo_id, msg);
-		pthread_mutex_unlock(&rules->print_mutex);
-	}
-	else
-	{
-		pthread_mutex_unlock(&rules->dead_lock);
-	}
-}
-
-static long long current_time_microseconds(void)
-{
-	struct timeval now;
-	gettimeofday(&now, NULL);
-	return ((long long)now.tv_sec * 1000000) + now.tv_usec;
-}
 
 void check_finished(t_philosophers *philo, int *local_finished)
 {
@@ -37,12 +7,6 @@ void check_finished(t_philosophers *philo, int *local_finished)
 	pthread_mutex_unlock(&philo->info->dead_lock);
 }
 
-long long	calculate_remaining_time(long long start, long long target_us)
-{
-	long long now;
-	now = current_time_microseconds();
-	return (target_us - (now - start));
-}
 
 void	short_sleep_loop(long long start, long long target_us, t_philosophers *philo)
 {
